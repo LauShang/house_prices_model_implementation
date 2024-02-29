@@ -161,3 +161,4 @@ cython_debug/
 
 # USER
 .DS_Store
+credentials.yaml
