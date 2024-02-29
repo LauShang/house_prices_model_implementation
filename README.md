@@ -8,6 +8,24 @@ Este proyecto utiliza datos históricos de precios de casas para predecir el pre
 ### Estructura del Proyecto 
 El repositorio está organizado en las siguientes carpetas y archivos:
 
+```
+├── LICENSE
+├── README.md
+├── data
+│   ├── data_description.txt
+│   ├── test.csv
+│   └── train.csv
+├── inference.py
+├── logs
+├── notebooks
+│   ├── tarea_1.ipynb
+│   └── tarea_1_2.ipynb
+├── prep.py
+├── src
+│   └── utils.py
+└── train.py
+```
+
 * data/: Contiene los subdirectorios raw/ para los datos brutos, prep/ para los datos preparados, inference/ para los datos de inferencia y predictions/ para las predicciones generadas por el modelo. 
 * src/: Contiene los scripts de Python para la preparación de datos (prep.py), entrenamiento del modelo (train.py) y la inferencia (inference.py).
 
