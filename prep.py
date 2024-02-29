@@ -4,14 +4,12 @@ Author: Lauro Reyes
 from src.utils import (
     pd,
     yaml,
+    argparse,
     get_colum_by_type
 )
 
-def prep():
+def prep(config):
     """function to prepare the data"""
-    # open yaml
-    with open("config.yaml", "r") as file:
-        config = yaml.safe_load(file)
     # get data
     train_data = pd.read_csv(config['etl']['train_data'])
     test_data = pd.read_csv(config['etl']['test_data'])
@@ -43,4 +41,28 @@ def prep():
     x_train_final.to_parquet(config['etl']['train_data_prep'])
 
 if __name__ == '__main__':
-    prep()
+    parser = argparse.ArgumentParser()
+    # Add arguments
+    parser.add_argument("-m","--manual", type=bool, default=False, help="Whether to manually set parameters.")
+    parser.add_argument("--train_data", type=str, help="file name for train_data")
+    parser.add_argument("--test_data", type=str, help="file name for test_data")
+    parser.add_argument("--test_data_prep", type=str, help="file name for test_data_prep")
+    parser.add_argument("--train_data_prep", type=str, help="file name for train_data_prep")
+    # Parse arguments
+    args = parser.parse_args()
+    # Conditionally load config or set parameters based on manual input
+    if args.manual:
+        config = {}
+        values = ['train_data', 'test_data', 'test_data_prep', 'train_data_prep']
+        objects = [args.train_data, args.test_data, args.test_data_prep, args.train_data_prep]
+        # etl parameters
+        config['etl'] = {}
+        for value,object_ in zip(values,objects):
+            if object_== None:
+                raise ValueError(f"{value} must be assigned")
+            config['etl'][value] = object_
+    else:
+        # Open YAML config file
+        with open("config.yaml", "r") as file:
+            config = yaml.safe_load(file)
+    prep(config)
