@@ -1,11 +1,13 @@
 """Script for train a randomforest model"""
-import joblib
-import pandas as pd
-import numpy as np
-from sklearn.metrics import mean_squared_error
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
-from sklearn.ensemble import RandomForestRegressor
+from src.utils import (
+    joblib,
+    pd,
+    np,
+    mean_squared_error,
+    train_test_split,
+    StandardScaler,
+    RandomForestRegressor
+)
 
 def train():
     """Main process"""

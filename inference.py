@@ -1,6 +1,8 @@
 """Script for make a prediction with a randomforest model"""
-import pandas as pd
-import joblib
+from src.utils import (
+    joblib,
+    pd
+)
 
 def inference():
     "main process"

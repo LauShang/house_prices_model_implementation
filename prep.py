@@ -1,7 +1,7 @@
 """Data preparation
 Author: Lauro Reyes
 """
-import pandas as pd
+from src.utils import pd
 
 def prep():
     """Main procces"""
