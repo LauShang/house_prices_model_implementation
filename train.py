@@ -11,7 +11,7 @@ from src.utils import (
     argparse,
     logging,
     has_rows,
-    sys
+    read_file
 )
 # log configuration
 logging.basicConfig(filename='logs/train.log', level=logging.DEBUG, filemode='w',
@@ -20,8 +20,8 @@ logging.basicConfig(filename='logs/train.log', level=logging.DEBUG, filemode='w'
 def train(config):
     """Function to train the RF Model"""
     # import data
-    x_prep = pd.read_parquet(config['etl']['train_data_prep'])
-    train_data = pd.read_csv(config['etl']['train_data'])
+    x_prep = read_file(config['etl']['train_data_prep'],'parquet')
+    train_data = read_file(config['etl']['train_data'])
     # check if data has rows
     has_rows(x_prep,"The train_data_prep file has no rows")
     has_rows(train_data,"The train_data file has no rows")
@@ -59,14 +59,22 @@ def train(config):
 if __name__ == '__main__':
     # Open YAML config file
     with open("config.yaml", "r") as file:
-        config = yaml.safe_load(file)
+        global_config = yaml.safe_load(file)
     # Parse arguments
     parser = argparse.ArgumentParser()
     # Add arguments
-    parser.add_argument("-m","--mod_model", type=bool, default=False, help="Whether to manually set parameters.")
-    parser.add_argument("--n_estimators", type=int, help="The number of trees in the forest. A higher number increases model complexity and potential for overfitting.")
-    parser.add_argument("--random_seed", type=int, help="Seed for the random number generator. Ensures reproducibility of model results.")
-    parser.add_argument("--max_depth", type=int, help="The maximum depth of the trees. Limits the complexity of the model to prevent overfitting. Use 'None' for unlimited depth.")
+    parser.add_argument("-m","--mod_model", type=bool, default=False,
+                        help="Whether to manually set parameters.")
+    parser.add_argument("--n_estimators", type=int,
+                        help="The number of trees in the forest. "
+                        "A higher number increases model complexity "
+                        "and potential for overfitting.")
+    parser.add_argument("--random_seed", type=int,
+                        help="Seed for the random number generator. "
+                        "Ensures reproducibility of model results.")
+    parser.add_argument("--max_depth", type=int,
+                        help="The maximum depth of the trees. Limits the complexity of the model"
+                        " to prevent overfitting. Use 'None' for unlimited depth.")
     # Parse arguments
     args = parser.parse_args()
     # Conditionally load config or set parameters based on manual input
@@ -75,12 +83,12 @@ if __name__ == '__main__':
         objects = [args.n_estimators, args.random_seed, args.max_depth]
         # model parameters
         for value,object_ in zip(values,objects):
-            if object_== None:
+            if object_ is None:
                 logging.error(f"The custom parameter {value} was not assigned")
                 raise ValueError(f"{value} must be assigned")
             else:
                 if value == 'random_seed':
-                    config['modeling'][value] = object_
+                    global_config['modeling'][value] = object_
                 else:
-                    config['modeling']['random_forest'][value] = object_
-    train(config)
+                    global_config['modeling']['random_forest'][value] = object_
+    train(global_config)
