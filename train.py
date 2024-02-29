@@ -8,14 +8,23 @@ from src.utils import (
     StandardScaler,
     RandomForestRegressor,
     yaml,
-    argparse
+    argparse,
+    logging,
+    has_rows,
+    sys
 )
+# log configuration
+logging.basicConfig(filename='logs/train.log', level=logging.DEBUG, filemode='w',
+                    format='%(asctime)s:%(levelname)s:%(message)s')
 
 def train(config):
     """Function to train the RF Model"""
     # import data
     x_prep = pd.read_parquet(config['etl']['train_data_prep'])
     train_data = pd.read_csv(config['etl']['train_data'])
+    # check if data has rows
+    has_rows(x_prep,"The train_data_prep file has no rows")
+    has_rows(train_data,"The train_data file has no rows")
     # adjust columns
     x_prep = x_prep.drop(columns=['Id'])
     y_obj = train_data['SalePrice']
@@ -45,7 +54,7 @@ def train(config):
     y_test_pred_rf = rf_model.predict(x_test_scaled)
     rmse_rf = np.sqrt(mean_squared_error(np.log(y_test),np.log(y_test_pred_rf)))
     rounded_rmse_rf = round(rmse_rf, 4)
-    print(f'Root Mean Squared Error on test Set (Random Forest): {rounded_rmse_rf}')
+    logging.info(f'Root Mean Squared Error on test Set (Random Forest): {rounded_rmse_rf}')
 
 if __name__ == '__main__':
     # Open YAML config file
@@ -67,6 +76,7 @@ if __name__ == '__main__':
         # model parameters
         for value,object_ in zip(values,objects):
             if object_== None:
+                logging.error(f"The custom parameter {value} was not assigned")
                 raise ValueError(f"{value} must be assigned")
             else:
                 if value == 'random_seed':

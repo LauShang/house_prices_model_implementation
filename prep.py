@@ -5,7 +5,9 @@ from src.utils import (
     pd,
     yaml,
     get_colum_by_type,
-    logging
+    logging,
+    read_file,
+    has_rows
 )
 # log configuration
 logging.basicConfig(filename='logs/prep.log', level=logging.DEBUG, filemode='w',
@@ -14,11 +16,11 @@ logging.basicConfig(filename='logs/prep.log', level=logging.DEBUG, filemode='w',
 def prep(config):
     """function to prepare the data"""
     # get data
-    train_data = pd.read_csv(config['etl']['train_data'])
-    test_data = pd.read_csv(config['etl']['test_data'])
-    logging.info(
-        f"Train and test data loaded. Train data shape: "
-        f"{train_data.shape}, Test data shape: {test_data.shape}")
+    train_data = read_file(config['etl']['train_data'])
+    test_data = read_file(config['etl']['test_data'])
+    # check rows
+    for table in [train_data,test_data]:
+        has_rows(table)
     # drop 'SalePrice'
     x_train = pd.concat([train_data.drop(columns=['SalePrice']),test_data],ignore_index=True)
     #calculate the percentage of null values in the columns
