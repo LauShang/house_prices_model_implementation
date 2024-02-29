@@ -3,7 +3,8 @@ Author: Lauro Reyes
 """
 from src.utils import (
     pd,
-    yaml
+    yaml,
+    get_colum_by_type
 )
 
 def prep():
@@ -22,18 +23,8 @@ def prep():
     col_to_drop = null_percent[null_percent > 50].keys()
     x_train = x_train.drop(columns=list(col_to_drop))
     # feature engineering
-    numerical_cols = (
-        x_train.loc[:, x_train.isnull().any()]
-        .select_dtypes(include='number')
-        .columns
-    )
-    categorical_cols = (
-        x_train.loc[:, x_train.isnull().any()]
-        .select_dtypes(exclude='number')
-        .columns
-    )
-    print("# Numerical columns with null values:", len(numerical_cols))
-    print("# Categorical columns with null values:", len(categorical_cols))
+    numerical_cols = get_colum_by_type(x_train)
+    categorical_cols = get_colum_by_type(x_train,False)
     for column in numerical_cols:
         # Replace missing values with the mean
         x_train[column] = x_train[column].fillna(x_train[column].mean())
