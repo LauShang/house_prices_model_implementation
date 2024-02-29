@@ -47,6 +47,7 @@ def train(config):
         )
     # Train the model
     rf_model.fit(x_train_scaled, y_train)
+    logging.info(f'Random Forest Model fitted')
     # Save the scaler
     joblib.dump(scaler, config['modeling']['scaler_file'])
     # Save the model

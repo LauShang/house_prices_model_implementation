@@ -49,6 +49,10 @@ def read_file(file,file_type='csv'):
             df = pd.read_parquet(file)
             logging.info(f"{file} found and read successfully.")
             return df
+        elif file_type == 'joblib':
+            joblib_object = joblib.load(file)
+            logging.info(f"{file} found and read successfully.")
+            return joblib_object
         else:
             sys.exit("Unknown file format")
     except FileNotFoundError:
