@@ -1,6 +1,5 @@
 """Suppor functions and libraries
 Author: Lauro Reyes"""
-
 import pandas as pd
 import joblib
 import numpy as np
@@ -11,7 +10,7 @@ from sklearn.ensemble import RandomForestRegressor
 import yaml
 import argparse
 import logging
-
+import sys
 # get num and categorical columns
 def get_colum_by_type(x_data,include=True):
     """Function to get the numerical or categorical columns from a dataset
@@ -35,3 +34,7 @@ def get_colum_by_type(x_data,include=True):
         print("# Categorical columns with null values:", len(result))
         return result
 
+def has_rows(df,message):
+    if len(df) == 0:
+        logging.error(message)
+        sys.exit(1)
