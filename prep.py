@@ -1,13 +1,19 @@
 """Data preparation
 Author: Lauro Reyes
 """
-from src.utils import pd
+from src.utils import (
+    pd,
+    yaml
+)
 
 def prep():
-    """Main procces"""
+    """function to prepare the data"""
+    # open yaml
+    with open("config.yaml", "r") as file:
+        config = yaml.safe_load(file)
     # get data
-    train_data = pd.read_csv('./data/train.csv')
-    test_data = pd.read_csv('./data/test.csv')
+    train_data = pd.read_csv(config['etl']['train_data'])
+    test_data = pd.read_csv(config['etl']['test_data'])
     # drop 'SalePrice'
     x_train = pd.concat([train_data.drop(columns=['SalePrice']),test_data],ignore_index=True)
     #calculate the percentage of null values in the columns
@@ -42,8 +48,8 @@ def prep():
     cut = train_data.shape[0]
     test_data_transform = x_train.iloc[cut:].copy()
     x_train_final = x_train.iloc[:cut].copy()
-    test_data_transform.to_parquet('./data/test_prep.parquet')
-    x_train_final.to_parquet('./data/train_prep.parquet')
+    test_data_transform.to_parquet(config['etl']['test_data_prep'])
+    x_train_final.to_parquet(config['etl']['train_data_prep'])
 
 if __name__ == '__main__':
     prep()
