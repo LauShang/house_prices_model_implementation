@@ -34,7 +34,23 @@ def get_colum_by_type(x_data,include=True):
         print("# Categorical columns with null values:", len(result))
         return result
 
-def has_rows(df,message):
+def has_rows(df,message="Table has no rows."):
     if len(df) == 0:
         logging.error(message)
+        sys.exit(1)
+
+def read_file(file,file_type='csv'):
+    try:
+        if file_type == 'csv':
+            df = pd.read_csv(file)
+            logging.info(f"{file} found and read successfully.")
+            return df
+        elif file_type == 'parquet':
+            df = pd.read_parquet(file)
+            logging.info(f"{file} found and read successfully.")
+            return df
+        else:
+            sys.exit("Unknown file format")
+    except FileNotFoundError:
+        logging.exception(f"File not found")
         sys.exit(1)
