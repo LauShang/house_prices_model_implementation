@@ -4,17 +4,19 @@ Author: Lauro Reyes
 from src.utils import (
     pd,
     yaml,
-    get_colum_by_type
+    get_colum_by_type,
+    logging
 )
+# log configuration
+logging.basicConfig(filename='logs/prep.log', level=logging.INFO,
+                    format='%(asctime)s:%(levelname)s:%(message)s')
 
-def prep():
+def prep(config):
     """function to prepare the data"""
-    # open yaml
-    with open("config.yaml", "r") as file:
-        config = yaml.safe_load(file)
     # get data
     train_data = pd.read_csv(config['etl']['train_data'])
     test_data = pd.read_csv(config['etl']['test_data'])
+    logging.info(f"Train and test data loaded. Train data shape: {train_data.shape}, Test data shape: {test_data.shape}")
     # drop 'SalePrice'
     x_train = pd.concat([train_data.drop(columns=['SalePrice']),test_data],ignore_index=True)
     #calculate the percentage of null values in the columns
@@ -31,8 +33,8 @@ def prep():
     for column in categorical_cols:
         # Replace missing values with the mode
         x_train[column] = x_train[column].fillna(x_train[column].mode()[0])
-    if not x_train.isnull().values.any():
-        print("\nThere are no missing values.")
+    if x_train.isnull().values.any():
+        logging.warning(f"Train data has missing values")
     # One-hot encoding
     x_train = pd.get_dummies(data=x_train)
     # ex_trainport
@@ -41,6 +43,13 @@ def prep():
     x_train_final = x_train.iloc[:cut].copy()
     test_data_transform.to_parquet(config['etl']['test_data_prep'])
     x_train_final.to_parquet(config['etl']['train_data_prep'])
+    logging.info("Processed train and test data saved")
 
 if __name__ == '__main__':
-    prep()
+    try:
+        with open("config.yaml", "r") as file:
+            config = yaml.safe_load(file)
+    except Exception as e:
+        logging.error(f"Failed to load configuration file: {e}")
+        raise
+    prep(config)

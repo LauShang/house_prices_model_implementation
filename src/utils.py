@@ -10,6 +10,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import RandomForestRegressor
 import yaml
 import argparse
+import logging
 
 # get num and categorical columns
 def get_colum_by_type(x_data,include=True):
