@@ -1,13 +1,15 @@
 """Script for make a prediction with a randomforest model"""
+import logging
+import datetime as dt
+import pandas as pd
 from src.utils import (
-    pd,
-    yaml,
     read_file,
-    logging
+    read_configuration
 )
 # log configuration
-logging.basicConfig(filename='logs/inference.log', level=logging.DEBUG, filemode='w',
-                    format='%(asctime)s:%(levelname)s:%(message)s')
+log_file_name = dt.datetime.strftime(dt.datetime.today(),'%Y%m%d_%H%M%S')
+logging.basicConfig(filename=f'logs/inference_{log_file_name}.log', level=logging.DEBUG,
+                    filemode='w', format='%(asctime)s:%(levelname)s:%(message)s')
 
 def inference(config):
     "return values for test data"
@@ -24,11 +26,10 @@ def inference(config):
     test_data = read_file(config['etl']['test_data'])
     result = pd.DataFrame({'Id': test_data['Id'], 'SalePrice': test_preds_rf})
     result.to_csv(config['etl']['predictions'], index=False)
-    logging.info(f'Model predictions updated')
+    logging.info('Model predictions updated')
 
 
 if __name__ == '__main__':
     # open yaml
-    with open("config.yaml", "r") as file:
-        global_config = yaml.safe_load(file)
+    global_config = read_configuration()
     inference(global_config)

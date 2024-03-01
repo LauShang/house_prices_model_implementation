@@ -1,16 +1,18 @@
 """Data preparation
 Author: Lauro Reyes
 """
+import logging
+import datetime as dt
+import pandas as pd
 from src.utils import (
-    pd,
-    yaml,
     get_colum_by_type,
-    logging,
     read_file,
-    has_rows
+    has_rows,
+    read_configuration
 )
 # log configuration
-logging.basicConfig(filename='logs/prep.log', level=logging.DEBUG, filemode='w',
+log_file_name = dt.datetime.strftime(dt.datetime.today(),'%Y%m%d_%H%M%S')
+logging.basicConfig(filename=f'logs/prep_{log_file_name}.log', level=logging.DEBUG, filemode='w',
                     format='%(asctime)s:%(levelname)s:%(message)s')
 
 def prep(config):
@@ -50,10 +52,5 @@ def prep(config):
     logging.info("Processed train and test data saved")
 
 if __name__ == '__main__':
-    try:
-        with open("config.yaml", "r") as file:
-            global_config = yaml.safe_load(file)
-    except Exception as e:
-        logging.error(f"Failed to load configuration file: {e}")
-        raise
-    prep(global_config)
+    project_config = read_configuration()
+    prep(project_config)

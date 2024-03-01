@@ -1,22 +1,19 @@
 """Suppor functions and libraries
 Author: Lauro Reyes"""
-import pandas as pd
-import joblib
-import numpy as np
-from sklearn.metrics import mean_squared_error
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
-from sklearn.ensemble import RandomForestRegressor
-import yaml
-import argparse
 import logging
 import sys
-import datetime as dt
+import pandas as pd
+import joblib
+import yaml
 # get num and categorical columns
 def get_colum_by_type(x_data,include=True):
-    """Function to get the numerical or categorical columns from a dataset
-        x_data: X data set
-        include: True = return number types columns, False return categorical columns [default = True]
+    """
+    Function to get the numerical or categorical columns from a dataset.
+    
+    Parameters:
+    - x_data: Dataset to process.
+    - include (bool): If True, return numerical type columns. If False, return categorical columns.
+                      Default is True.
     """
     if include:
         result = (
@@ -43,11 +40,12 @@ def has_rows(df,message="Table has no rows."):
 
     Parameters:
     - df (DataFrame): The DataFrame to check.
-    - message (str, optional): The error message to log if the DataFrame is empty. Defaults to "Table has no rows.".
+    - message (str, optional): The error message to log if the DataFrame is empty. 
+                               Defaults to "Table has no rows.".
     """
     if len(df) == 0:
         logging.error(message)
-        sys.exit(1)
+        sys.exit()
 
 def read_file(file,file_type='csv'):
     """
@@ -60,11 +58,12 @@ def read_file(file,file_type='csv'):
 
     Parameters:
     - file (str): The path to the file to read.
-    - file_type (str, optional): The type of file to read ('csv', 'parquet', 'joblib'). Defaults to 'csv'.
+    - file_type (str, optional): The type of file to read ('csv', 'parquet', 'joblib'). 
+        Defaults to 'csv'.
 
     Returns:
-    - DataFrame or object: The content of the file read into a DataFrame (for CSV and Parquet files) or
-      any object stored in a Joblib file.
+    - DataFrame or object: The content of the file read into a DataFrame 
+        (for CSV and Parquet files) or any object stored in a Joblib file.
 
     Raises:
     - FileNotFoundError: If the specified file does not exist.
@@ -75,19 +74,18 @@ def read_file(file,file_type='csv'):
             df = pd.read_csv(file)
             logging.info("%s found and read successfully.",file)
             return df
-        elif file_type == 'parquet':
+        if file_type == 'parquet':
             df = pd.read_parquet(file)
-            logging.info(f"{file} found and read successfully.")
+            logging.info("%s found and read successfully.",file)
             return df
-        elif file_type == 'joblib':
+        if file_type == 'joblib':
             joblib_object = joblib.load(file)
-            logging.info(f"{file} found and read successfully.")
+            logging.info("%s found and read successfully.",file)
             return joblib_object
-        else:
-            sys.exit("Unknown file format")
+        sys.exit("Unknown file format")
     except FileNotFoundError:
         logging.exception("File not found")
-        sys.exit(1)
+        sys.exit()
 
 def read_configuration(config_file="config.yaml"):
     """
@@ -104,13 +102,13 @@ def read_configuration(config_file="config.yaml"):
         yaml.YAMLError: If there is an error in parsing the YAML file.
     """
     try:
-        with open(config_file, "r") as file:
+        with open(config_file, "r", encoding="utf-8") as file:
             config = yaml.safe_load(file)
             logging.info("Yaml config found and read successfully.")
             return config
     except FileNotFoundError as e:
         logging.error("Failed to load configuration file: %s",e)
-        sys.exit(1)
+        sys.exit()
     except yaml.scanner.ScannerError as e:
         logging.error("Yaml config file has errors: %s",e)
-        sys.exit(1)
+        sys.exit()

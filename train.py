@@ -1,20 +1,21 @@
 """Script for train a randomforest model"""
+import argparse
+import logging
+import datetime as dt
+import joblib
+import numpy as np
+from sklearn.metrics import mean_squared_error
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.ensemble import RandomForestRegressor
 from src.utils import (
-    joblib,
-    pd,
-    np,
-    mean_squared_error,
-    train_test_split,
-    StandardScaler,
-    RandomForestRegressor,
-    yaml,
-    argparse,
-    logging,
     has_rows,
-    read_file
+    read_file,
+    read_configuration
 )
 # log configuration
-logging.basicConfig(filename='logs/train.log', level=logging.DEBUG, filemode='w',
+log_file_name = dt.datetime.strftime(dt.datetime.today(),'%Y%m%d_%H%M%S')
+logging.basicConfig(filename=f'logs/train_{log_file_name}.log', level=logging.DEBUG, filemode='w',
                     format='%(asctime)s:%(levelname)s:%(message)s')
 
 def train(config):
@@ -47,7 +48,7 @@ def train(config):
         )
     # Train the model
     rf_model.fit(x_train_scaled, y_train)
-    logging.info(f'Random Forest Model fitted')
+    logging.info('Random Forest Model fitted')
     # Save the scaler
     joblib.dump(scaler, config['modeling']['scaler_file'])
     # Save the model
@@ -55,12 +56,11 @@ def train(config):
     y_test_pred_rf = rf_model.predict(x_test_scaled)
     rmse_rf = np.sqrt(mean_squared_error(np.log(y_test),np.log(y_test_pred_rf)))
     rounded_rmse_rf = round(rmse_rf, 4)
-    logging.info(f'Root Mean Squared Error on test Set (Random Forest): {rounded_rmse_rf}')
+    logging.info('Root Mean Squared Error on validation Set (Random Forest): %d',rounded_rmse_rf)
 
 if __name__ == '__main__':
     # Open YAML config file
-    with open("config.yaml", "r") as file:
-        global_config = yaml.safe_load(file)
+    global_config = read_configuration()
     # Parse arguments
     parser = argparse.ArgumentParser()
     # Add arguments
@@ -85,11 +85,10 @@ if __name__ == '__main__':
         # model parameters
         for value,object_ in zip(values,objects):
             if object_ is None:
-                logging.error(f"The custom parameter {value} was not assigned")
+                logging.error("The custom parameter %s was not assigned",value)
                 raise ValueError(f"{value} must be assigned")
+            if value == 'random_seed':
+                global_config['modeling'][value] = object_
             else:
-                if value == 'random_seed':
-                    global_config['modeling'][value] = object_
-                else:
-                    global_config['modeling']['random_forest'][value] = object_
+                global_config['modeling']['random_forest'][value] = object_
     train(global_config)
