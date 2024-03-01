@@ -4,7 +4,8 @@ import datetime as dt
 import pandas as pd
 from src.utils import (
     read_file,
-    read_configuration
+    read_configuration,
+    check_columns
 )
 # log configuration
 log_file_name = dt.datetime.strftime(dt.datetime.today(),'%Y%m%d_%H%M%S')
@@ -19,6 +20,8 @@ def inference(config):
     rf_model = read_file(config['modeling']['model_file'],'joblib')
     # sale transformed test data
     test_data_transform = read_file(config['etl']['test_data_prep'],'parquet')
+    # check columns
+    check_columns(test_data_transform,config['etl']['columns_file_path'],'test_data_transform')
     test_x = test_data_transform.drop('Id', axis=1)
     test_x_scaled = scaler.transform(test_x)
     test_preds_rf = rf_model.predict(test_x_scaled)

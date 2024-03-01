@@ -1,6 +1,7 @@
 """Suppor functions and libraries
 Author: Lauro Reyes"""
 import logging
+import json
 import sys
 import pandas as pd
 import joblib
@@ -111,4 +112,25 @@ def read_configuration(config_file="config.yaml"):
         sys.exit()
     except yaml.scanner.ScannerError as e:
         logging.error("Yaml config file has errors: %s",e)
+        sys.exit()
+
+def check_columns(df, json_file_path, df_name):
+    """
+    Check if the DataFrame columns match the order and length of the columns 
+    saved in the columns JSON file.
+    
+    Args:
+    - df: The pandas DataFrame to check.
+    - json_file_path: Path to the JSON file containing the correct column order.
+    
+    Returns:
+    - True if the DataFrame columns match the saved order, False otherwise.
+    """
+    with open(json_file_path, 'r', encoding='utf-8') as file:
+        saved_columns = json.load(file)
+    # Check if the length and the order of the columns match
+    if len(df.columns) == len(saved_columns) and all(df.columns == saved_columns):
+        logging.info("Correct length and column order for %s",df_name)
+    else:
+        logging.error("Incorrect length or column order for %s",df_name)
         sys.exit()

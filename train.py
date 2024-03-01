@@ -11,7 +11,8 @@ from sklearn.ensemble import RandomForestRegressor
 from src.utils import (
     has_rows,
     read_file,
-    read_configuration
+    read_configuration,
+    check_columns
 )
 # log configuration
 log_file_name = dt.datetime.strftime(dt.datetime.today(),'%Y%m%d_%H%M%S')
@@ -26,6 +27,8 @@ def train(config):
     # check if data has rows
     has_rows(x_prep,"The train_data_prep file has no rows")
     has_rows(train_data,"The train_data file has no rows")
+    # check column order
+    check_columns(x_prep,config['etl']['columns_file_path'],'x_prep')
     # adjust columns
     x_prep = x_prep.drop(columns=['Id'])
     y_obj = train_data['SalePrice']

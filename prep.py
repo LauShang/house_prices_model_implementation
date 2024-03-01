@@ -3,6 +3,7 @@ Author: Lauro Reyes
 """
 import logging
 import datetime as dt
+import json
 import pandas as pd
 from src.utils import (
     get_colum_by_type,
@@ -43,6 +44,10 @@ def prep(config):
         logging.warning("Train data has missing values")
     # One-hot encoding
     x_train = pd.get_dummies(data=x_train)
+    # save the columns order
+    with open(config['etl']['columns_file_path'], 'w', encoding='utf-8') as file:
+        json.dump(x_train.columns.tolist(), file)
+        logging.info("Columns order and lenght saved")
     # ex_trainport
     cut = train_data.shape[0]
     test_data_transform = x_train.iloc[cut:].copy()
