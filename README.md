@@ -26,36 +26,43 @@ El repositorio está organizado en las siguientes carpetas y archivos:
 └── train.py
 ```
 
-* data/: Contiene los subdirectorios raw/ para los datos brutos, prep/ para los datos preparados, inference/ para los datos de inferencia y predictions/ para las predicciones generadas por el modelo. 
-* src/: Contiene los scripts de Python para la preparación de datos (prep.py), entrenamiento del modelo (train.py) y la inferencia (inference.py).
-
 ### Configuración 
 #### Requisitos 
-Antes de comenzar, asegúrate de tener Python instalado en tu sistema. Este proyecto también requiere las siguientes bibliotecas de Python: 
-* numpy 
-* pandas 
-* scikit-learn 
-* joblib
+Antes de comenzar, asegúrate de tener Python instalado en tu sistema y correr en un ambiente virtual
+```bash
+pip install -r requirements.txt
+```
 
 #### Preparación de Datos 
 Para preparar los datos para el entrenamiento y la inferencia, ejecuta el siguiente comando: 
 
 ```bash
-python src/prep.py 
+python prep.py 
 ```
-
-Esto procesará los datos en data/raw/ y los guardará en data/prep/.
 
 #### Entrenamiento del Modelo 
 Para entrenar el modelo con los datos preparados, ejecuta: 
 ```bash
-python src/train.py 
+python train.py 
 ```
-Esto generará un modelo entrenado y lo guardará como model.joblib en la carpeta del proyecto.
+Esto generará un modelo entrenado y lo guardará como model.joblib en la carpeta data del proyecto.
+* Este script acepta parámetros en caso de querer ajustar manualmente n_estimators, random_seed y max_depth para el modelo Random Forest
 
 #### Inferencia
 Para realizar predicciones con un conjunto de datos de inferencia utilizando el modelo entrenado, ejecuta: 
 ```bash
-python src/inference.py
+python inference.py
 ```
-Las predicciones se guardarán en data/predictions/.
+Las predicciones se guardarán en data.
+
+#### pytest
+pytest<br>
+======================================================================= test session starts =======================================================================<br>
+platform darwin -- Python 3.9.7, pytest-8.0.2, pluggy-1.4.0<br>
+rootdir: /Users/reye011/Library/CloudStorage/OneDrive-SonyMusicEntertainment/Documents/ITAM/métodos_de_gran_escala/house_prices_model_implementation<br>
+collected 2 items                                                                                                                                                 <br>
+<br>
+test_utils.py ..                                                                                                                                            [100%]<br>
+<br>
+======================================================================== 2 passed in 3.04s ========================================================================<br>
+
