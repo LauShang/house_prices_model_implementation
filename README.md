@@ -26,6 +26,9 @@ El repositorio está organizado en las siguientes carpetas y archivos:
 └── train.py
 ```
 
+#### Flujo
+![flujo](media/tarea_5.png)
+
 ### Configuración 
 #### Requisitos 
 Antes de comenzar, asegúrate de tener Python instalado en tu sistema y correr en un ambiente virtual
